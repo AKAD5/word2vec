@@ -1,0 +1,103 @@
+\chapter{支持向量机的基本原理}
+\section{线性可分}
+设给定一特征空间上的训练集：
+$$ D = \{(x_1, y_1), (x_2, y_2), ..., (x_n, y_n)\}$$
+$x_i$是第i个样本的特征向量，$y_i$是对应的类标记，当$y_i$=+1时，样本属于正类，当$y_i$=-1时，样本属于负类。数据集线性可分的含义是，存在一个超平面$w^Tx+b=0$的，将特征空间划分成两个部分，一部分全是正类，一部分全是负类。
+
+\section{函数间隔}
+当确定一个超平面$w^Tx+b=0$时，点$(x_i,y_i)$关于超平面的函数间隔定义如下：
+$$ \hat\gamma_i = y_i(w^Tx_i    +b) $$
+数据集$D$关于超平面的函数间隔定义为数据集中和超平面距离最小的点的距离：
+$$ \hat\gamma = \underset{i}{\min}\ \hat\gamma_i $$
+
+\section{几何间隔}
+同时成比例的增加$w, b$时，超平面不变，但是函数间隔却也成比例增加了，需对超平面的法向量w施加规范约束，如约束法向量的长度为1，$|w|=1$，此时的函数间隔成为几何间隔。
+
+一般的，定义样本点$(x_i,y_i)$到超平面$w^Tx+b=0$的几何间隔如下：
+$$ \gamma_i = \frac{w^T}{|w|}x_i + \frac{b}{|w|} $$
+于是数据集$D$关于超平面的几何间隔定义：
+$$ \gamma = \underset{i}{\min}\ \gamma_i $$
+
+\section{间隔最大化}
+支持向量机的基本思想是能够正确划分训练数据集并且几何间隔最大的超平面，这个问题可以表述为如下的约束最优化问题：
+\begin{align*}
+    & \underset{w,b}{\max}\ \gamma \\
+    s.t.\ & y_i(\frac{w}{|w|} x_i + \frac{b}{|w|}) \ge \gamma, \quad i=1, 2, ..., N
+\end{align*}
+等价于下面用函数间隔表述的问题：
+\begin{align*}
+    & \underset{w,b}{\max}\ \frac{\hat\gamma}{|w|} \\
+    s.t.\ & y_i(w x_i + b) \ge \hat\gamma, \quad i=1, 2, ..., N
+\end{align*}
+由之前的讨论可知，函数间隔$\hat\gamma$的具体值不影响优化，我们可以取$\hat\gamma=1$，这样优化的目标函数是$\frac{1}{|w|}$，这又等价于最小化函数$\frac{1}{2}|w|^2$，于是线性可分支持向量机的优化问题可以表述为如下形式：
+\begin{align*}
+    & \underset{w,b}{\min}\ \frac{1}{2} |w|^2 \\
+    s.t.\ & y_i(w x_i + b)-1 \ge 0, \quad i=1, 2, ..., N
+\end{align*}
+
+\section{间隔最大化的对偶问题}
+引入Lagrange乘子$\alpha_i \ge 0, i=1,2,...,N$，定义如下的拉格朗日函数：
+$$ L(w,b,\alpha)= \frac{1}{2} |w|^2 - \sum_{i=1}^N \alpha_i y_i(w x_i + b) + \sum_{i=1}^N \alpha_i$$
+原始问题的对偶问题级极大极小问题：
+$$ \underset{\alpha}{\max}\ \underset{w,b}{\min}\ L(w,b,\alpha) $$
+首先，我们求解$\underset{w,b}{\min}\ L(w,b,\alpha)$，即求如下方程组：
+$$
+\begin{cases}
+    \nabla_w L(w,b,\alpha)&= 0 \\
+    \nabla_b L(w,b,\alpha)&= 0
+\end{cases}
+$$
+解得：
+$$
+\begin{cases}
+    w = \sum\limits_{i=1}^N \alpha_i y_i x_i \\
+    \sum\limits_{i=1}^N \alpha_i y_i = 0
+\end{cases}
+$$
+将上述结果带入Lagrange函数得：
+$$ \underset{w,b}{\min}\ L(w,b,\alpha) = -\frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i x_j) + \sum_{i=1}^N \alpha_i $$
+于是，原始问题的对偶问题可以表述为如下形式：
+\begin{align*}
+    & \underset{\alpha}{\min}\ \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i x_j) - \sum_{i=1}^N \alpha_i \\
+    s.t.\ & \sum_{i=1}^N \alpha_i y_i = 0 \\
+          & \alpha_i \ge 0,\quad i=1, 2, ..., N
+\end{align*}
+
+\section{核函数}
+设X是输入空间，H是特征空间，如果存在一个从X到H的映射：
+$$ \phi(x): X \rightarrow H $$
+对所有的$x_i, x_j \in X$，函数$K(x_1,x_2)$满足：
+$$ K(x_i,x_j) = \phi(x_i) \phi(x_j) $$
+则：$K(x_i,x_j)$是核函数，$\phi(x)$是映射函数。
+
+通过引入核函数，我们可以处理非线性边界问题。其基本思想是，当数据集在输入空间中非线性可分，我们认为存在一个映射函数，将输入空间的样本点映射到一个更高维的特征空间。在这个高维的特征空间里，会存在一个超平面将映射后的样本集分割成正类和负类两部分。算法的目的是在这个更高为的特征空间做线性分割。核函数可以让我们不需知道映射函数的具体形式，就能计算在特征空间两个样本的内积。我们重新回顾下线性可分支持向量机的对偶表述：
+\begin{align*}
+    & \underset{\alpha}{\min}\ \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i x_j) - \sum_{i=1}^N \alpha_i \\
+    s.t.\ & \sum_{i=1}^N \alpha_i y_i = 0 \\
+          & \alpha_i \ge 0,\quad i=1, 2, ..., N
+\end{align*}
+我们只需简单的将$x_i,x+j$的内积$x_i x_j$替换成核函数，这样我们便得到一个非线性支持向量机的对偶表示：
+\begin{align*}
+    & \underset{\alpha}{\min}\ \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j K(x_i,x_j) - \sum_{i=1}^N \alpha_i \\
+    s.t.\ & \sum_{i=1}^N \alpha_i y_i = 0 \\
+          & \alpha_i \ge 0,\quad i=1, 2, ..., N
+\end{align*}
+那么对于不同的分类问题，我们需要不同的核函数完成分类，常用的核函数有如下几种：
+\begin{itemize}
+    \item 线性核函数\\
+    $$K(x_i,x_j) = x_i x_j$$
+    \item 多项式核函数\\
+    $$K(x_i,x_j) = (x_i x+j + 1)^p $$
+    \item 高斯核函数\\
+    $$ K(x_i,x_j) = \exp^{-\frac{|x_i-x_j|^2}{2 \sigma^2}} $$
+\end{itemize}
+
+\section{支持向量机的学习算法——序列最小最优化算法（SMO）}
+待求变量$\alpha_i$的数目等于样本数，一般的数据集规模使得待求变量数目多，难以得到解析解，计算机直接求解对小样本数据有效，当样本数据规模较大时，算法会非常低效。高效的支持向量机的学习算法尤为重要，其中一种重要的算法SMO由Platt于1998年提出。
+SMO算法的基本思想是，算法每次选择两个变量$\alpha_1,\alpha_2$，固定其它变量，构建一个子二次规划问题，并求得这个子二次规划问题的最优解。然后在另选择两个变量，继续求解子问题。当所有变量的解都满足KKT条件后，那么问题的最优解便得到了。
+子二次规划问题中，由于约束条件的存在，实际上只有一个变量是自由的，一个变量可由另一个变量求得，实际上是一个单变量优化问题，这个问题可以解析求得解。
+这样，SMO算法可以分成两个部分。
+
+1. 对两个变量的二次规划问题的求解。
+
+2. 选择两个变量的启发式算法。

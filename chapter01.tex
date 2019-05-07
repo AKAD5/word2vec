@@ -1,0 +1,70 @@
+\chapter{拉格朗日对偶性}
+\section{约束优化问题}
+设目标函数$f(x)$是定义在$R^n$上的连续可微函数，在变量$x$满足某些约束的条件下求f(x)的最优值的问题称为约束优化问题。如：
+\begin{align*}
+    & \underset{x}{\min}\ f(x) \\
+    s.t.\quad & g_i(x) \le 0, i=1, 2, ..., m; \\
+         & h_j(x) = 0, j=1, 2, ..., l;
+\end{align*}
+表示在满足等式和不等式约束条件下，求得函数f(x)的最小值。这里，函数g(x)和h(x)均是定义在$R^n$空间上的连续可微函数。
+我们引入系数参数$\alpha$，$\beta$，定义如下的Lagrange函数：
+$$
+L(x,\alpha,\beta) = f(x) + \sum_{i=1}^m \alpha_i g_i(x) + \sum_{j=1}^l \beta_j h_j(x)
+$$
+定义如下函数：
+$$
+    \theta_P(x) = \underset{\alpha,\beta;\alpha_i \ge 0}{\max} L(x,\alpha,\beta)
+$$
+$\theta_P(x)$具有如下性质：
+$$\theta_P(x)=
+\begin{cases}
+    f(x)\quad &\mbox{如果$x$满足约束条件};\\
+    \infty &\mbox{如果$x$不满足约束条件};
+\end{cases}
+$$
+那么原始优化问题的等价表示是：
+$$ \underset{x}{min}\ \theta_P(x) $$
+这样
+$$\underset{x}{min} \underset{\alpha,\beta;\alpha_i \ge 0}{\max} L(x,\alpha,\beta)$$表示Lagrange函数的极小极大问题，
+$$ p^*=\underset{x}{min}\ \theta_P(x) $$
+是原始问题的最优值。
+
+\section{约束优化问题的对偶问题}
+定义如下函数：
+$$
+    \theta_D(\alpha,\beta) = \underset{x}{\min}\ L(x,\alpha,\beta)
+$$
+于是：
+$$ \underset{\alpha,\beta;\alpha_i \ge 0}{\max}\ \theta_D(\alpha,\beta) $$
+称为原始问题的对偶问题。\\
+这样
+$$\underset{\alpha,\beta;\alpha_i \ge 0}{\max} \underset{x}{\min}\ L(x,\alpha,\beta)$$
+表示Lagrange函数的极大极小问题，
+$$ d^*=\underset{\alpha,\beta;\alpha_i \ge 0}{\max} \theta_D(\alpha,\beta) $$
+是对偶问题的最优值。
+
+\section{一些定理}
+\begin{theorem}{}{}
+    若原始问题和对偶问题都有最优值，$p^*$是原始问题的最优值，$d^*$是对偶问题的最优值，则：
+    $$ d^* \le p^* $$
+\end{theorem}
+\begin{theorem}{}{}
+    若$x^*$是原始问题的可行解，$\alpha^*, \beta^*$是对偶问题的可行解，且满足
+    $$p^*=d^*$$
+    那么$x^*$，$\alpha^*, \beta^*$是原始问题和对偶问题的最优解。
+\end{theorem}
+\begin{theorem}{}{}
+    若函数$f(x)$和$g_i(x)$是凸函数，$h_i(x)$是仿射函数，并且不等式约束$g_i(x)\le0$严格成立，则存在$x^*$，$\alpha^*, \beta^*$，使得$x^*$是原始问题的最优解，$\alpha^*, \beta^*$是对偶问题的最优解，且：
+        $$ p^* = d^* = L(x^*,\alpha^*,\beta^*) $$
+\end{theorem}
+\begin{theorem}{}{}
+    若函数$f(x)$和$g_i(x)$是凸函数，$h_i(x)$是仿射函数，并且不等式约束$g_i(x)\le0$严格成立，$x^*$，$\alpha^*,\beta^*$分别是原始问题和对偶问题的最优解的充要条件是：
+    $x^*$，$\alpha^*,\beta^*$需满足如下的KKT（Karush-Kuhn-Tucker）条件（定常方程式，原始可行性，对偶可行性，互补松弛性）。
+    \begin{gather*}
+        \nabla_x L(x^*,\alpha^*,\beta^*) = 0 \\
+        g_i(x^*) \le 0,\ i=1, 2, ..., m \\
+        h_j(x^*) = 0,\ j=1, 2, ..., l \\
+        \alpha_i^* \ge 0,\ i=1, 2, ..., m \\
+        \alpha_i^*g_i(x^*) = 0,\ i=1, 2, ..., m
+    \end{gather*}
+\end{theorem}
